@@ -1,0 +1,41 @@
+
+<div class="content-box" >
+    
+    <h2>#i18n{jsr170.modify_workspace.tableLabel}</h2>
+    
+<form method="post" form name="modify_workspace" id="modify_workspace" action="jsp/admin/plugins/jsr170/DoModifyWorkspace.jsp">
+        <input type="hidden" name="workspace_id" value="${workspace.id}" />
+        <input type="hidden" name="jcr_type" value="${workspace.jcrType}" />
+        <input type="hidden" name="workspace_name" value="${workspace.name}" />
+        <p>
+            <label for="jcr_type" >#i18n{jsr170.create_workspace.jcrType} * : </label> 
+           	<span id="jcr_type">${workspace.jcrType}</span>
+        </p>
+        <p>
+            <label for="workspace_label" >#i18n{jsr170.create_workspace.rowTitleName} * : </label> 
+            <input type="text" value="${workspace.label}" id="workspace_label" name="workspace_label" size="60" maxlength="50" tabindex="1" />
+        </p>
+        <p>
+            <label for="workspace_name" >#i18n{jsr170.create_workspace.rowTitlePath} * : </label> 
+            <span id="workspace_name">${workspace.name}</span>
+        </p>
+        <p>
+            <label for="view_user" >#i18n{jsr170.create_view.userName} * : </label> 
+            <input type="text" value="${workspace.user}" id="view_user" name="view_user" size="60" maxlength="50" tabindex="1" />
+        </p>
+        <p>
+            <label for="view_password" >#i18n{jsr170.create_view.password} * : </label> 
+            <input type="password" value="" id="view_password" name="view_password" size="60" maxlength="50" tabindex="1" />
+        </p>
+        <p>
+            <label for="workgroup" >#i18n{jsr170.create_workspace.workgroup} * : </label> 
+           	<@combo name="workgroup" default_value="${workspace.workgroup}" items=workgroup_list />
+        </p>
+        
+        <p>   
+            <input type="submit" value="#i18n{jsr170.modify_workspace.buttonValidate}" class="button" tabindex="3" />
+        </p>
+        
+    </form>
+    
+</div>

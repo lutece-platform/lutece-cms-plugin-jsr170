@@ -1,0 +1,182 @@
+﻿<?xml version="1.0" ?>
+<document>
+<properties>
+</properties>
+<body>
+
+<section name="Installation sur un même serveur Tomcat">
+<subsection name="Introduction"><p>Cette page décrit la procédure
+d'installation d'Alfresco avec Lutèce. Dans la suite, nous considérons que
+:</p>
+<ul><li><p>$TOMCAT est le répertoire d'installation de Tomcat.</p>
+</li>
+<li><p>$ALFRESCO_WEBAPP est le répertoire contenant la webapp décompressée
+Alfresco.</p>
+</li>
+</ul>
+</subsection>
+<subsection name="Installation de l'extension JCR-JNDI"><p>Récupérer le patch
+alfresco-jcr-jndi-v5.zip attaché dans la demande
+<a href="http://issues.alfresco.com/browse/AR-1131">Issue AR-1131</a>
+, et suivre les instructions suivantes:</p>
+<ul><li><p>Copier le jar jcr-1.0.jar
+(<a href="http://www.day.com/maven/jsr170/jars/jcr-1.0.jar">http://www.day.com/maven/jsr170/jars/jcr-1.0.jar</a>
+) dans le répertoire $TOMCAT/common/lib</p>
+</li>
+<li><p>Extraire le fichier
+jcr-jndi-alfresco/build/dist/alfresco-jcr-jndi-bridge.jar de l'archive vers
+$TOMCAT/common/lib</p>
+</li>
+<li><p>Extraire le fichier
+jcr-jndi-alfresco/config/alfresco/extension/jcr-api-jndi-context.xml vers
+$ALFRESCO_WEBAPP/WEB-INF/classes/alfresco/extension/</p>
+</li>
+<li><p>Supprimer le fichier jcr-1.0.jar du répertoire
+$ALFRESCO_WEBAPP/WEB-INF/lib</p>
+</li>
+<li><p>Supprimer le fichier jcr-1.0.jar du répertoire /WEB-INF/lib de votre
+webapp Lutèce</p>
+</li>
+</ul>
+</subsection>
+<subsection name="Configuration de Tomcat"><p>Alfresco doit être démarré avant
+Lutece. Il faut donc ajouter un fichier alfresco.xml dans le répertoire
+$TOMCAT/conf/Catalina/localhost contenant les lignes suivantes :</p>
+<source>&lt;?xml version='1.0' encoding='utf-8'?&gt;
+&lt;Context&gt;
+&lt;/Context&gt;</source>
+<p>Dans le fichier server.xml, ajouter les lignes suivantes dans la subsection
+GlobalNamingResources :</p>
+<source> &lt;Resource name=&quot;jcr/baseRepository&quot;
+           scope=&quot;Shareable&quot;
+           auth=&quot;Container&quot; 
+           type=&quot;javax.jcr.Repository&quot;
+           factory=&quot;org.alfresco.jcr.jndi.JndiJcrObjectFactory&quot;
+           jcrRepositoryName=&quot;baseAlfrescoRepository&quot;/&gt;</source>
+<p>Dans le fichier de contexte de Lutece (fichier <i>nom de la webapp</i>
+.xml, le créer si nécessaire), ajouter la ligne:</p>
+<source>&lt;ResourceLink global=&quot;jcr/baseRepository&quot; name=&quot;jcr/baseRepository&quot; type=&quot;javax.jcr.Repository&quot;/&gt; </source>
+</subsection>
+<subsection name="Configuration de la webapp Lutèce"><p>Dans le fichier
+jsr170_context.xml, vérifier que les identifiants de connexion au repository
+Alfresco sont corrects.</p>
+<source>&lt;!--
+        The session factory that connects to the repository.
+        Here you can set the credentials used to connect to the repository.
+ --&gt;
+&lt;bean id=&quot;alfresco.SessionFactory&quot; class=&quot;org.springmodules.jcr.JcrSessionFactory&quot;&gt;
+ &lt;property name=&quot;repository&quot; ref=&quot;alfresco.jndiRepository&quot;/&gt;
+        &lt;property name=&quot;credentials&quot;&gt;
+    &lt;!-- alfresco credentials --&gt;
+   &lt;bean class=&quot;javax.jcr.SimpleCredentials&quot;&gt;
+    &lt;constructor-arg index=&quot;0&quot; value=&quot;guest&quot;/&gt;                  &lt;----- modifier le login
+    &lt;constructor-arg index=&quot;1&quot;&gt;
+     &lt;bean factory-bean=&quot;alfresco.password&quot;
+          factory-method=&quot;toCharArray&quot;/&gt;
+    &lt;/constructor-arg&gt;
+   &lt;/bean&gt;
+ &lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;!-- create the password to return it as a char[] --&gt;
+&lt;bean id=&quot;alfresco.password&quot; class=&quot;java.lang.String&quot;&gt;
+  &lt;constructor-arg index=&quot;0&quot; value=&quot;guest&quot;/&gt;                    &lt;----- modifier le mot de passe
+&lt;/bean&gt;</source>
+</subsection>
+<subsection name="Problèmes"><p>Si vous rencontrez des ClassCastException ou
+d'autres exceptions de conversion lors de l'accès au référentiel Alfresco,
+vérifiez qu'il n'y a pas de jars liés au jcr dans le répertoire
+$ALFRESCO_WEBAPP/WEB-INF/lib et supprimez le jar jcr-1.0.jar du répertoire
+WEB-INF/lib de la webapp Lutèce.</p>
+</subsection>
+</section>
+
+<section name="Installation sur des serveurs séparés">
+<subsection name="Introduction">
+<p>
+On utilise l'extension alfresco-rmi pour publier l'interface jsr170 d'Alfresco et l'extension extension-jcr-thread-bound.
+</p>
+</subsection>
+<subsection name="Installation de l'extension alfresco-rmi">
+<ul>
+<li>Décompresser l'archive</li>
+<li>Copier les jars jackrabbit-jcr-rmi-1.2.2.jar et jcr-1.0.jar dans le répertoire shared/lib</li>
+<li>Copier le jar extension-jcr-rmi/build/dist/extension-jcr-rmi.jar dans le répertoire WEB-INF/lib de la webapp Alfresco</li>
+<li>Copier le contenu du répertoire extension-jcr-rmi/config/alfresco/extension dans le répertoire WEB-INF/classes/alfresco/extension de la webapp</li>
+<li>Enlever la ligne suivante du fichier WEB-INF/classes/alfresco/extension/jcr-rmi-context.xml:</li>
+<source>
+&lt;import resource="classpath:alfresco/jcr-context.xml" /&gt;
+</source>
+<li>Modifier le port dans le fichier WEB-INF/classes/alfresco/extension/jcr-rmi.properties pour configurer celui par défaut d'Alfresco:
+</li>
+<source>
+# ##################### #
+# RMI JCR Configuration #
+# ##################### #
+
+rmi.jcr.binding.servername=localhost
+rmi.jcr.binding.port=<strong>50500</strong>
+rmi.jcr.binding.name=javaContentRepository
+rmi.jcr.resources.path=/alfresco/extension/messages/jcr-rmi-messages.properties
+</source>
+</ul>
+</subsection>
+
+<subsection name="Installation de l'extension extension-jcr-thread-bound">
+<ul>
+<li>Décompresser l'archive.</li>
+<li>Copier le jar extension-jcr-thread-bound/build/dist/extension-jcr-thread-bound.jar dans le répertoire WEB-INF/lib de la webapp Alfresco</li>
+<li>Copier le fichier extension-jcr-thread-bound/config/alfresco/extension/thread-bound-jcr-context.xml dans le répertoire &lt;tomcat_home&gt;/shared/classes/alfresco/extension</li>
+<li>Modifier le fichier jcr-rmi-context.xml pour faire pointer le bean javaContentRepositoryRmiBinding vers threadBoundJcrRepository</li>
+</ul>
+</subsection>
+
+<subsection name="Configuration du jsr170_context.xml">
+<p>
+Utilisation du rmiClient Jackrabbit (cf. springmodules manual)
+</p>
+<source>
+&lt;bean id=&quot;alfresco.rmiClientFactory&quot; class=&quot;org.apache.jackrabbit.rmi.client.ClientRepositoryFactory&quot;/&gt;
+&lt;bean id=&quot;alfresco.rmiClient&quot; factory-bean=&quot;rmiClientFactory&quot; factory-method=&quot;getRepository&quot; 
+                   &gt;
+  &lt;constructor-arg value=&quot;rmi://localhost:1099/javaContentRepository&quot;/&gt;
+&lt;/bean&gt;
+Configurer ensuite le sessionFactory pour utiliser le rmiClient:
+&lt;bean id=&quot;alfresco.SessionFactory&quot; class=&quot;org.springmodules.jcr.JcrSessionFactory&quot;&gt;
+ &lt;property name=&quot;repository&quot; ref=&quot;alfresco.rmiClient&quot;/&gt;
+    &lt;property name=&quot;credentials&quot;&gt;
+    &lt;!-- alfresco credentials --&gt;
+   &lt;bean class=&quot;javax.jcr.SimpleCredentials&quot;&gt;
+    &lt;constructor-arg index=&quot;0&quot; value=&quot;guest&quot;/&gt;
+    &lt;constructor-arg index=&quot;1&quot;&gt;
+     &lt;bean factory-bean=&quot;alfresco.password&quot;
+          factory-method=&quot;toCharArray&quot;/&gt;
+    &lt;/constructor-arg&gt;
+   &lt;/bean&gt;
+ &lt;/property&gt;
+ 
+&lt;/bean&gt;
+</source>
+<p>
+Utiliser le DAO Remote:
+</p>
+<source>
+&lt;bean id=&quot;alfresco.repositoryFileDAO&quot; class=&quot;fr.paris.lutece.plugins.jcr.business.RemoteAlfrescoRepositoryFileDAO&quot;
+    factory-method=&quot;getInstance&quot;&gt;
+    &lt;constructor-arg ref=&quot;alfresco.jcrTemplate&quot; /&gt;
+    &lt;constructor-arg ref=&quot;alfresco.repositoryInitializer&quot;/&gt;
+    &lt;constructor-arg ref=&quot;alfresco.defaultWorkspaceName&quot;/&gt;
+&lt;/bean&gt;
+</source>
+
+</subsection>
+<subsection name="Quelques liens">
+<ul>
+<li>Bug: <a href="http://issues.alfresco.com/browse/AR-1131">sur la pertinence de l'interface RMI</a></li>
+<li><a href="http://wiki.alfresco.com/wiki/JCR-RMI_Extension">Extension JCR-RMI pour Alfresco</a></li>
+<li><a href="http://issues.alfresco.com/browse/AR-706">Bug concernant la perte de session</a></li>
+</ul>
+</subsection>
+</section>
+</body>
+</document>

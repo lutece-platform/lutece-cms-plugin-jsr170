@@ -1,0 +1,39 @@
+
+<div class="content-box" >
+    
+    <h2>#i18n{jsr170.create_workspace.tableLabel}</h2>
+    
+<form method="post" form name="add_workspace" id="add_workspace" action="jsp/admin/plugins/jsr170/DoAddWorkspace.jsp">
+        
+        <p>
+            <label for="jcr_type" >#i18n{jsr170.create_workspace.jcrType} * : </label> 
+           	<@combo name="jcr_type" default_value="" items=jcr_list />
+        </p>
+        <p>
+            <label for="workspace_label" >#i18n{jsr170.create_workspace.rowTitleName} * : </label> 
+            <input type="text" id="workspace_label" name="workspace_label" size="60" maxlength="50" tabindex="1" />
+        </p>
+        <p>
+            <label for="workspace_name" >#i18n{jsr170.create_workspace.rowTitlePath} * : </label> 
+            <input type="text" id="workspace_name" name="workspace_name" size="60" maxlength="50" tabindex="1" />
+        </p>
+        <p>
+            <label for="view_user" >#i18n{jsr170.create_view.userName} * : </label> 
+            <input type="text" id="view_user" name="view_user" size="60" maxlength="50" tabindex="1" />
+        </p>
+        <p>
+            <label for="view_password" >#i18n{jsr170.create_view.password} * : </label> 
+            <input type="password" id="view_password" name="view_password" size="60" maxlength="50" tabindex="1" />
+        </p>
+        <p>
+            <label for="workgroup" >#i18n{jsr170.create_workspace.workgroup} * : </label> 
+           	<@combo name="workgroup" default_value="" items=workgroup_list />
+        </p>
+        
+        <p>   
+            <input type="submit" value="#i18n{jsr170.create_workspace.buttonValidate}" class="button" tabindex="3" />
+        </p>
+        
+    </form>
+    
+</div>

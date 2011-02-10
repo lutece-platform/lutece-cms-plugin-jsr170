@@ -1,0 +1,4 @@
+<lutece = 'http://lutece.paris.fr/lut/1.0'>
+<nt = 'http://www.jcp.org/jcr/nt/1.0'>
+[lutece:file] > nt:file
+  - lutece:size (long)

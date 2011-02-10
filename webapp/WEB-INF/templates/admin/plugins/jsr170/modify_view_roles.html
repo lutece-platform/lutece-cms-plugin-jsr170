@@ -1,0 +1,54 @@
+
+<div class="content-box" >
+    
+    <h2>#i18n{jsr170.views.tableLabel}</h2>
+    
+<form method="post" name="modify_view_roles" id="modify_view_roles" action="jsp/admin/plugins/jsr170/DoModifyViewRoles.jsp">
+        <input type="hidden" value="${view.id}" name="view_id" />
+        <p>
+            #i18n{jsr170.manage_workspace.description} <b>${view.name}</b>
+        </p>
+        <p>
+         <label for="read_roles">#i18n{jsr170.manage_workspace.readRole} :</label>
+         <select name="read_roles" id="read_roles" multiple>
+         <#list workspace_read_roles as role >
+         	<#if role.checked>
+	         <option selected="selected" value="${role.code}">${role.name}</option>
+	        <#else>
+	         <option value="${role.code}">${role.name}</option>
+	        </#if>
+         </#list>
+         </select>
+        </p>
+        <p>
+         <label for="write_roles">#i18n{jsr170.manage_workspace.writeRole} :</label>
+         <select name="write_roles" id="write_roles" multiple>
+         <#list workspace_write_roles as role >
+         	<#if role.checked>
+	         <option selected="selected" value="${role.code}">${role.name}</option>
+	        <#else>
+	         <option value="${role.code}">${role.name}</option>
+	        </#if>
+         </#list>
+         </select>
+        </p>
+        <p>
+         <label for="remove_roles">#i18n{jsr170.manage_workspace.removeRole} :</label>
+         <select name="remove_roles" id="remove_roles" multiple>
+         <#list workspace_remove_roles as role >
+         	<#if role.checked>
+	         <option selected="selected" value="${role.code}">${role.name}</option>
+	        <#else>
+	         <option value="${role.code}">${role.name}</option>
+	        </#if>
+         </#list>
+         </select>
+        </p>
+        
+        <p>   
+            <input type="submit" value="#i18n{jsr170.create_workspace.buttonValidate}" class="button" tabindex="3" />
+        </p>
+        
+    </form>
+    
+</div>

@@ -1,0 +1,31 @@
+
+<div class="content-box" >
+    
+    <h2>#i18n{jsr170.create_view.tableLabel}</h2>
+    
+<form method="post" form name="add_view" id="add_view" action="jsp/admin/plugins/jsr170/DoAddView.jsp">
+        
+        <p>
+            <label for="view_name" >#i18n{jsr170.create_view.rowTitleName} * : </label> 
+            <input type="text" id="view_name" name="view_name" size="60" maxlength="50" tabindex="1" />
+        </p>
+        <p>
+            <label for="workspace_id" >#i18n{jsr170.create_view.workspaceName} * : </label> 
+            <select id="workspace_id" name="workspace_id">
+            	<#list workspaces_list as workspace>
+            		<option value="${workspace.id}">${workspace.label}</option>
+            	</#list>
+            </select>
+        </p>
+        <p>
+            <label for="workgroup" >#i18n{jsr170.create_view.workgroup} * : </label> 
+           	<@combo name="workgroup" default_value="" items=workgroup_list />
+        </p>
+        
+        <p>   
+            <input type="submit" value="#i18n{jsr170.create_view.buttonValidate}" class="button" tabindex="3" />
+        </p>
+        
+    </form>
+    
+</div>

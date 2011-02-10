@@ -1,0 +1,43 @@
+
+<div class="content-box" >
+    
+    <h2>#i18n{jsr170.modify_view.tableLabel}</h2>
+    
+<form method="post" form name="add_view" id="add_view" action="jsp/admin/plugins/jsr170/DoModifyView.jsp">
+        <input type="hidden" name="view_id" id="view_id" value="${view.id}" />
+        <p>
+            <label for="view_name" >#i18n{jsr170.create_view.rowTitleName} * : </label> 
+            <input type="text" value="${view.name}" id="view_name" name="view_name" size="60" maxlength="50" tabindex="1" />
+        </p>
+        <p>
+            <label for="workspace_id" >#i18n{jsr170.create_view.workspaceName} * : </label> 
+				<@combo name="workspace_id" default_value="${view.workspaceId}" items=workspaces_list />
+        </p>
+        <p>
+            <label for="workgroup" >#i18n{jsr170.create_view.workgroup} * : </label> 
+           	<@combo name="workgroup" default_value="${view.workgroup}" items=workgroup_list />
+        </p>
+        
+        <p>   
+            <input type="submit" value="#i18n{jsr170.modify_view.buttonValidate}" class="button" tabindex="3" />
+        </p>
+        
+    </form>
+	<form method="post" form name="select_root" id="select_root" action="jsp/admin/plugins/jsr170/SelectViewRoot.jsp">
+        <input type="hidden" name="view_id" id="view_id" value="${view.id}" />
+        <p>
+            <label for="path" >#i18n{jsr170.create_view.path} * : </label> 
+            <span id="path" name="path">
+            <#if view.path?has_content>
+            	${pretty_path}
+            <#else>
+            	/
+            </#if>
+            </span>
+        </p>
+        <p>   
+            <input type="submit" value="#i18n{jsr170.modify_view.selectRoot}" class="button" tabindex="3" />
+        </p>
+	</form>    
+    
+</div>

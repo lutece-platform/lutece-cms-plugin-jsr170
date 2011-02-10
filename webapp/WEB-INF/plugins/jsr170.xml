@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?><plug-in>
+    <name>jsr170</name>
+    <class>fr.paris.lutece.plugins.jcr.service.JcrPlugin</class>
+    <version>2.1.2</version>
+    <documentation/>
+    <installation/>
+    <changes/>
+    <user-guide/>
+    <description>jsr170.plugin.description</description>
+    <provider>jsr170.plugin.provider</provider>
+    <provider-url>http://lutece.paris.fr</provider-url>
+    <icon-url>images/admin/skin/plugins/jsr170/folderlisting.png</icon-url>
+    <copyright>Copyright 2001-2008 Mairie de Paris</copyright>
+    <core-version-dependency>
+		<min-core-version>2.4.0</min-core-version>
+		<max-core-version/>	
+	</core-version-dependency>
+    <db-pool-required>1</db-pool-required>
+    
+	<!-- Search Indexer Service -->
+	<search-indexers>
+		<search-indexer>
+			<search-indexer-class>
+				fr.paris.lutece.plugins.jcr.service.search.JcrIndexer
+			</search-indexer-class>
+		</search-indexer>
+	</search-indexers>
+
+    <!-- Administration interface parameters -->
+    <admin-features>
+        <admin-feature>
+            <feature-id>JSR170_MANAGEMENT</feature-id>
+            <feature-title>jsr170.adminFeature.jsr170_management.name</feature-title>
+            <feature-description>jsr170.adminFeature.jsr170_management.description</feature-description>
+            <feature-level>1</feature-level>
+            <feature-url>jsp/admin/plugins/jsr170/ManageWorkspaces.jsp</feature-url>
+        </admin-feature>
+        <admin-feature>
+            <feature-id>JSR170_VIEW_MANAGEMENT</feature-id>
+            <feature-title>jsr170.adminFeature.jsr170_view_management.name</feature-title>
+            <feature-description>jsr170.adminFeature.jsr170_view_management.description</feature-description>
+            <feature-level>1</feature-level>
+            <feature-url>jsp/admin/plugins/jsr170/ManageViews.jsp</feature-url>
+        </admin-feature>
+    </admin-features>
+    
+    <!-- RBAC Resources -->
+    <!-- rbac-resource-types>
+        <rbac-resource-type>
+            <rbac-resource-type-class>fr.paris.lutece.plugins.jcr.service.FolderListingResourceIdService</rbac-resource-type-class>
+        </rbac-resource-type>
+    </rbac-resource-types -->
+    
+    <!-- Portlet parameters -->
+    <portlets>
+        <portlet>
+            <portlet-class>fr.paris.lutece.plugins.jcr.business.portlet.Jsr170PortletHome</portlet-class>
+            <portlet-type-id>JSR170_PORTLET</portlet-type-id>
+            <portlet-type-name>jsr170.portlet.name</portlet-type-name>
+            <portlet-creation-url>plugins/jsr170/CreatePortletJsr170.jsp</portlet-creation-url>
+            <portlet-update-url>plugins/jsr170/ModifyPortletJsr170.jsp</portlet-update-url>
+            <portlet-create-action-url>plugins/jsr170/DoCreatePortletJsr170.jsp</portlet-create-action-url>
+            <portlet-modify-action-url>plugins/jsr170/DoModifyPortletJsr170.jsp</portlet-modify-action-url>
+            <!-- optional entries -->
+            <portlet-create-script-template>/admin/portlet/script_create_portlet.html</portlet-create-script-template>
+            <portlet-modify-script-template>/admin/portlet/script_modify_portlet.html</portlet-modify-script-template>
+            <portlet-create-specific-template>/admin/plugins/jsr170/portlet/create_jsr170.html</portlet-create-specific-template>
+            <portlet-modify-specific-template>/admin/plugins/jsr170/portlet/modify_jsr170.html</portlet-modify-specific-template>
+            <portlet-create-specific-form-template/>
+            <portlet-modify-specific-form-template/>
+        </portlet>
+    </portlets>
+    
+</plug-in>

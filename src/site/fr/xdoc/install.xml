@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" ?>
+<document>
+<properties>
+</properties>
+<body>
+
+<section name="﻿Installation de l'artifact (jcr.jar)"><p>Télécharger
+jcr.jar de
+<a href="http://www.day.com/maven/jsr170/jars/jcr-1.0.jar">http://www.day.com/maven/jsr170/jars/jcr-1.0.jar</a>
+, puis l'installer :</p>
+<source>mvn install:install-file -DgroupId=javax.jcr -DartifactId=jcr \
+          -Dversion=1.0 -Dpackaging=jar -Dfile=/path/to/file</source>
+</section>
+<section name="Installation"><p>mvn lutece:exploded</p>
+</section>
+<section name="Configuration du repository Jackrabbit"><p>Par défaut, le
+repository jackrabbit se situe dans le répertoire repo de la webapp. Si ce
+répertoire n'existe pas, il est nécessaire de le créer.</p>
+<p>Il est possible de configurer l'emplacement de stockage du repository
+Jackrabbit en modifiant le fichier jsr170_context.xml :</p>
+<source>&lt;!--  set this to the wanted path relative to the webapp path
+        Notice that this folder MUST exist
+ --&gt;
+&lt;bean id=&quot;jackrabbit.relativePath&quot; class=&quot;java.lang.String&quot;&gt;
+        &lt;constructor-arg value=&quot;/repo&quot; /&gt;                      &lt;---------- Configurer ce chemin (relatif par rapport à la webapp)
+&lt;/bean&gt;</source>
+</section>
+
+</body>
+</document>

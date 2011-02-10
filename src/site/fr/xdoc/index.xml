@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" ?>
+<document>
+<properties>
+</properties>
+<body>
+
+<section name="﻿Introduction"><p>JSR-170 est une spécification d'un Java
+Content Repository (JCR). Un JCR est un référentiel de données stockés
+indépendamment du support physique : le stockage peut être fait aussi bien
+sur un système de fichier que dans une base de données ou en mémoire. La
+façon d'accéder aux données est définies par l'API.</p>
+<p>JSR-170 propose les opérations suivantes:</p>
+<ul><li><p>ajout/suppression/modification d'éléments</p>
+</li>
+<li><p>versioning des modifications</p>
+</li>
+<li><p>indexation du contenu</p>
+</li>
+</ul>
+<p>Le plugin jsr170 de Lutèce permet de parcourir un JCR contenant une
+arborescence de fichiers et de répertoires. Les fonctionnalités proposées
+par le plugin Lutèce JSR170 sont:</p>
+<ul><li><p>création/suppression de répertoire</p>
+</li>
+<li><p>création/modification/suppression de fichier</p>
+</li>
+<li><p>gestion des versions d'un fichier</p>
+</li>
+<li><p>consultation de l'historique d'un fichier et de ces versions
+précédentes</p>
+</li>
+<li><p>utilisation du JCR Jackrabbit embarqué</p>
+</li>
+<li><p>possibilité d'utiliser un JCR Alfresco</p>
+</li>
+<li><p>indexation du contenu des JCR configurés dans Lutèce</p>
+</li>
+</ul>
+<p>Les droits en lecture, écriture et suppression sont assignés en fonction
+des rôles myLutece.</p>
+</section>
+<section name="Détails d'implémentation"><p>Le plugin jsr170 embarque un JCR
+Jackrabbit
+(<a href="http://jackrabbit.apache.org">http://jackrabbit.apache.org</a>
+) accédé à travers la couche Spring : la configuration du repository se
+fait dans le contexte Spring, on garantit ainsi l'indépendance vis-à-vis de
+l'implémentation du JCR.</p>
+</section>
+
+</body>
+</document>

@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" ?>
+<document>
+<properties>
+</properties>
+<body>
+
+<section name="Introduction"><p>This page describes some hints to install
+Alfresco and Lutece. We're considering that :</p>
+<ul><li><p>$TOMCAT references the Tomcat installation directory.</p>
+</li>
+<li><p>$ALFRESCO_WEBAPP references the Alfresco extracted webapp
+directory.</p>
+</li>
+</ul>
+</section>
+<section name="Install JCR-JNDI extension"><p>Get the patch
+alfresco-jcr-jndi-v5.zip attached in
+<a href="http://issues.alfresco.com/browse/AR-1131">Issue AR-1131</a>
+, then follow the steps below:</p>
+<ul><li><p>Copy jcr-1.0.jar (from
+<a href="http://www.day.com/maven/jsr170/jars/jcr-1.0.jar">http://www.day.com/maven/jsr170/jars/jcr-1.0.jar</a>
+) in directory $TOMCAT/common/lib</p>
+</li>
+<li><p>Extract jcr-jndi-alfresco/build/dist/alfresco-jcr-jndi-bridge.jar from
+archive to $TOMCAT/common/lib</p>
+</li>
+<li><p>Extract
+jcr-jndi-alfresco/config/alfresco/extension/jcr-api-jndi-context.xml in
+$ALFRESCO_WEBAPP/WEB-INF/classes/alfresco/extension/</p>
+</li>
+<li><p>Remove jcr-1.0.jar from $ALFRESCO_WEBAPP/WEB-INF/lib</p>
+</li>
+<li><p>Remove jcr-1.0.jar from Lutece WEB-INF/lib</p>
+</li>
+</ul>
+</section>
+<section name="Configure Tomcat container"><p>Alfresco requires to be started
+before Lutece. To do this, add a file alfresco.xml in directory
+$TOMCAT/conf/Catalina/localhost with the following content:</p>
+<source>&lt;?xml version='1.0' encoding='utf-8'?&gt;
+&lt;Context&gt;
+&lt;/Context&gt;</source>
+<p>In server.xml, add the following lines in the GlobalNamingResources section
+:</p>
+<source> &lt;Resource name=&quot;jcr/baseRepository&quot;
+           scope=&quot;Shareable&quot;
+           auth=&quot;Container&quot; 
+           type=&quot;javax.jcr.Repository&quot;
+           factory=&quot;org.alfresco.jcr.jndi.JndiJcrObjectFactory&quot;
+           jcrRepositoryName=&quot;baseAlfrescoRepository&quot;/&gt;</source>
+<p>In the Lutece context file, add the line:</p>
+<source>&lt;ResourceLink global=&quot;jcr/baseRepository&quot; name=&quot;jcr/baseRepository&quot; type=&quot;javax.jcr.Repository&quot;/&gt; </source>
+</section>
+<section name="Lutece webapp configuration"><p>Check the credentials used to
+connect to the Alfresco repository in the file jsr170_context.xml.</p>
+<source>&lt;!--
+        The session factory that connects to the repository.
+        Here you can set the credentials used to connect to the repository.
+ --&gt;
+&lt;bean id=&quot;alfresco.SessionFactory&quot; class=&quot;org.springmodules.jcr.JcrSessionFactory&quot;&gt;
+ &lt;property name=&quot;repository&quot; ref=&quot;alfresco.jndiRepository&quot;/&gt;
+        &lt;property name=&quot;credentials&quot;&gt;
+    &lt;!-- alfresco credentials --&gt;
+   &lt;bean class=&quot;javax.jcr.SimpleCredentials&quot;&gt;
+    &lt;constructor-arg index=&quot;0&quot; value=&quot;guest&quot;/&gt;                  &lt;----- modify login
+    &lt;constructor-arg index=&quot;1&quot;&gt;
+     &lt;bean factory-bean=&quot;alfresco.password&quot;
+          factory-method=&quot;toCharArray&quot;/&gt;
+    &lt;/constructor-arg&gt;
+   &lt;/bean&gt;
+ &lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;!-- create the password to return it as a char[] --&gt;
+&lt;bean id=&quot;alfresco.password&quot; class=&quot;java.lang.String&quot;&gt;
+  &lt;constructor-arg index=&quot;0&quot; value=&quot;guest&quot;/&gt;                    &lt;----- modify password
+&lt;/bean&gt;</source>
+</section>
+<section name="Troubleshootings"><p>If you are experiencing ClassCastException
+or other conversion exceptions while trying to acces the repository, check
+that there are no jcr related jars in $ALFRESCO_WEBAPP/WEB-INF/lib and remove
+jcr-1.0.jar from Lutece WEB-INF/lib.</p>
+</section>
+
+</body>
+</document>

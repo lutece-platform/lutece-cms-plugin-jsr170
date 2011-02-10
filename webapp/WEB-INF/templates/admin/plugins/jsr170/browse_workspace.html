@@ -1,0 +1,76 @@
+	<#if file.resourceId?has_content>
+	<#assign file_resourceId=file.resourceId/>
+	<#else>
+	<#assign file_resourceId="-1"/>	
+	</#if>
+	<#if file.parentId?has_content>
+	<#assign file_parentId=file.parentId/>
+	<#else>
+	<#assign file_parentId="-1"/>	
+	</#if>
+	     <input type="hidden" name="file_id" value="${file_resourceId}" />
+	     <#if file_resourceId != "-1" && go_up >
+	     	<p>
+	     		<a href="javascript:goUp();"><img src="images/admin/skin/up.png" alt="#i18n{document.browse_spaces.go_up_link}" hspace="5" /> #i18n{jsr170.browse_workspace.go_up_link}</a>
+	     	</p>
+	     </#if>
+	     <p>
+	     <#list file_list as file_item >
+	     	<#if file_item.isDirectory()>
+				<input type="radio" class="radio" name="browser_selected_file" value="${file_item.resourceId}"/>
+	            <img src="images/admin/skin/plugins/jsr170/space.png" alt="${file_item.name}" hspace="5" />
+	            <a href="javascript:openSpace('${file_item.resourceId}');">${file_item.name}</a>
+	          	<br />
+          	</#if>
+	     </#list>
+         </p>
+	     <p>
+		     <input type="submit" value="#i18n{jsr170.browse_workspace.validate}" class="button" />
+	     </p>
+
+<script language="javascript">
+formId = 0;
+function goUp()
+{ 
+	document.forms[formId].action='${action}';
+	document.forms[formId].file_id.value='${file_parentId}';
+	unselectRadioBtn( formId );
+	document.forms[formId].submit();
+}
+
+function openSpace(idSpace)
+{
+	document.forms[formId].action='${action}';
+	document.forms[formId].file_id.value=idSpace;
+	unselectRadioBtn( formId );
+	document.forms[formId].submit();
+}
+
+function unselectRadioBtn( formId )
+{
+	if(document.forms[formId].browser_selected_file != undefined)
+	{
+		if( document.forms[formId].browser_selected_file.length > 0 )
+		{
+		    for( var i=0; i<document.forms[formId].browser_selected_file.length; i++ )
+		    {
+		    	if (document.forms[formId].browser_selected_file[i].checked)
+		    	{
+					document.forms[formId].browser_selected_file[i].checked=false;
+		        }
+		    }
+		}
+		else
+		{
+			document.forms[formId].browser_selected_file.checked=false;
+		}
+	}
+}
+
+function modifyChoice()
+{
+	document.forms[formId].browser_selected_file.value=null;
+	document.forms[formId].action='${action}';
+	document.forms[formId].submit();
+}
+</script>

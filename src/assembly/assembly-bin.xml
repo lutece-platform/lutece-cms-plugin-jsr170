@@ -1,0 +1,43 @@
+<assembly>
+	<id>bin</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+
+	<fileSets>
+		<fileSet>
+			<directory>webapp</directory>
+			<outputDirectory>/</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>src/sql</directory>
+			<outputDirectory>/WEB-INF/sql</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>target</directory>
+			<outputDirectory>/WEB-INF/lib</outputDirectory>
+			<includes>
+				<include>${artifactId}-${version}.jar</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>target/dependency</directory>
+			<outputDirectory>/WEB-INF/lib</outputDirectory>
+			<includes>
+				<include>*.jar</include>
+			</includes>
+			<excludes>
+				<exclude>lutece*</exclude>
+			</excludes>
+		</fileSet>
+	</fileSets>
+	<dependencySets>
+    	<dependencySet>
+	      <includes>
+    	    <include>*:jar</include>
+	      </includes>
+	    </dependencySet>
+	</dependencySets>
+	
+</assembly>

@@ -1,0 +1,49 @@
+
+<div class="content-box" >
+    <h2>#i18n{jsr170.views.tableLabel}</h2>
+    <table summary="#i18n{jsr170.views.tableSummary}">
+        <tr>
+            <th>#i18n{jsr170.views.columnTitleName}</th>
+            <th>#i18n{jsr170.views.columnWorkspace}</th>
+            <th>#i18n{jsr170.views.defaultRoot}</th>
+            <th>#i18n{jsr170.create_workspace.workgroup}</th>
+            <th>#i18n{jsr170.views.columnTitleAction}</th>
+        </tr>
+        
+        <#list views_list as view >
+        
+        <tr>
+            <td>
+                <a href="jsp/admin/plugins/jsr170/ModifyView.jsp?view_id=${view.id}" class="admin-menu">
+                    ${view.name}
+                </a>
+            </td>
+            <td>
+                ${(workspaces_list[view.workspaceId?string]).label}
+            </td>
+			<td>
+				${view_pathname_list[view.id + ""]}
+			</td>
+            <td>
+            	<#if workgroup_list[view.workgroup]?has_content>
+            	${workgroup_list[view.workgroup]}
+            	</#if>
+            </td>
+            <td>
+                <a href="jsp/admin/plugins/jsr170/ManageLocks.jsp?view_id=${view.id}" class="admin-menu">
+                <img src="images/admin/skin/plugins/jsr170/lock.png" width="24" height="24" alt="#i18n{jsr170.views.labelRBAC}" title="#i18n{jsr170.views.labelManageLocks}"></a>
+                <a href="jsp/admin/plugins/jsr170/ModifyViewRoles.jsp?view_id=${view.id}" class="admin-menu">
+                <img src="images/admin/skin/actions/rbac.png" width="24" height="24" alt="#i18n{jsr170.views.labelRBAC}" title="#i18n{jsr170.views.labelRBAC}"></a>
+                <a href="jsp/admin/plugins/jsr170/DeleteView.jsp?view_id=${view.id}" class="admin-menu">
+                <img src="images/admin/skin/actions/delete.png" width="24" height="24" alt="#i18n{jsr170.views.labelDelete}" title="#i18n{jsr170.views.labelDelete}"></a>
+            </td>
+        </tr>	
+        </#list>
+            
+        </table>
+    
+    <form action="jsp/admin/plugins/jsr170/AddView.jsp">
+        <input type="submit" value="#i18n{jsr170.views.buttonAddView}" class="button" />
+    </form>
+    
+</div>

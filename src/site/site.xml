@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project>
+	<version />
+	<body>
+		<links>
+			<item name="FR" href="/fr/index.html" />
+		</links>
+
+		<menu name="Overview">
+			<item name="Introduction" href="index.html"/>
+			<item name="Installation" href="install.html"/>
+			<item name="Usage" href="usage.html"/>
+			<item name="Alfresco notes" href="alfresco_notes.html"/>
+		</menu>
+    
+    <menu name="Downloads" inherit="bottom">
+			     <item name="Released versions" href="../../stable_builds/plugins/plugin-jsr170/"/>
+			     <item name="Nightly builds" href="../../nightly_builds/plugins/plugin-jsr170/" />
+		</menu>
+    
+		<menu ref="reports"/>
+	</body>
+</project>

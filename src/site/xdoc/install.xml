@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" ?>
+<document>
+<properties>
+</properties>
+<body>
+
+<section name="Artifact Installation (jcr.jar)"><p>Download jcr.jar from
+<a href="http://www.day.com/maven/jsr170/jars/jcr-1.0.jar">http://www.day.com/maven/jsr170/jars/jcr-1.0.jar</a>
+, then install it :</p>
+<source>mvn install:install-file -DgroupId=javax.jcr -DartifactId=jcr \
+          -Dversion=1.0 -Dpackaging=jar -Dfile=/path/to/file</source>
+</section>
+<section name="Installation"><p>mvn lutece:exploded</p>
+</section>
+<section name="Repository configuration"><p>Plugin-jsr170 can work on
+Jackrabbit or Alfresco repositories. The configuration is done in the
+jsr170_context.xml, there you will be able to choose a repository type.</p>
+<p>See <a href="alfresco_notes.html">Alfresco notes</a>
+.</p>
+</section>
+
+</body>
+</document>
