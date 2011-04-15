@@ -51,6 +51,14 @@
         </rbac-resource-type>
     </rbac-resource-types -->
     
+    <!-- Xpage configuration -->
+    <applications>
+        <application>
+            <application-id>jsr170</application-id>
+         <application-class>fr.paris.lutece.plugins.jcr.web.Jsr170App</application-class>
+        </application>
+    </applications>
+    
     <!-- Portlet parameters -->
     <portlets>
         <portlet>

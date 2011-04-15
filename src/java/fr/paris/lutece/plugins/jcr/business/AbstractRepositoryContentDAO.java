@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.jcr.business;
 
 import fr.paris.lutece.plugins.jcr.business.admin.AdminJcrHome;
 import fr.paris.lutece.plugins.jcr.business.admin.AdminWorkspace;
+import fr.paris.lutece.plugins.jcr.service.JcrPlugin;
 import fr.paris.lutece.plugins.jcr.service.search.JcrIndexer;
 import fr.paris.lutece.plugins.jcr.util.JcrNodeLockedException;
 import fr.paris.lutece.plugins.jcr.util.JcrPathNotFoundException;
@@ -102,7 +103,7 @@ public abstract class AbstractRepositoryContentDAO extends AbstractRepositoryDAO
     {
         final AdminWorkspace workspace = AdminJcrHome.getInstance(  )
                                                      .getWorkspacesListByNameKey( PluginService.getPlugin( 
-                    JcrIndexer.PLUGIN_NAME ) ).get( strWorkspace );
+                    JcrPlugin.PLUGIN_NAME ) ).get( strWorkspace );
 
         execute( strWorkspace,
             new JcrCallback(  )
@@ -138,7 +139,7 @@ public abstract class AbstractRepositoryContentDAO extends AbstractRepositoryDAO
     {
         final AdminWorkspace workspace = AdminJcrHome.getInstance(  )
                                                      .getWorkspacesListByNameKey( PluginService.getPlugin( 
-                    JcrIndexer.PLUGIN_NAME ) ).get( strWorkspace );
+                    JcrPlugin.PLUGIN_NAME ) ).get( strWorkspace );
 
         execute( strWorkspace,
             new JcrCallback(  )
@@ -180,7 +181,7 @@ public abstract class AbstractRepositoryContentDAO extends AbstractRepositoryDAO
     {
         Map<String, AdminWorkspace> adminWorkspaces = AdminJcrHome.getInstance(  )
                                                                   .getWorkspacesListByNameKey( PluginService.getPlugin( 
-                    JcrIndexer.PLUGIN_NAME ) );
+                    JcrPlugin.PLUGIN_NAME ) );
         final AdminWorkspace workspace = adminWorkspaces.get( strWorkspace );
 
         execute( strWorkspace,
@@ -551,7 +552,7 @@ public abstract class AbstractRepositoryContentDAO extends AbstractRepositoryDAO
     {
         final AdminWorkspace workspace = AdminJcrHome.getInstance(  )
                                                      .getWorkspacesListByNameKey( PluginService.getPlugin( 
-                    JcrIndexer.PLUGIN_NAME ) ).get( strWorkspace );
+                    JcrPlugin.PLUGIN_NAME ) ).get( strWorkspace );
 
         execute( strWorkspace,
             new JcrCallback(  )

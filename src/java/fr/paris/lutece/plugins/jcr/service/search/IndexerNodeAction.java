@@ -36,6 +36,7 @@ package fr.paris.lutece.plugins.jcr.service.search;
 import fr.paris.lutece.plugins.jcr.business.INodeAction;
 import fr.paris.lutece.plugins.jcr.business.IRepositoryFile;
 import fr.paris.lutece.plugins.jcr.business.admin.AdminWorkspace;
+import fr.paris.lutece.plugins.jcr.service.jcrsearch.JcrSearchItem;
 import fr.paris.lutece.plugins.lucene.service.indexer.IFileIndexer;
 import fr.paris.lutece.plugins.lucene.service.indexer.IFileIndexerFactory;
 import fr.paris.lutece.portal.service.search.SearchItem;
@@ -44,6 +45,7 @@ import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.util.url.UrlItem;
 
 import org.apache.lucene.demo.html.HTMLParser;
+import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 
@@ -119,9 +121,8 @@ public class IndexerNodeAction implements INodeAction<Document, Collection<Docum
             {
                 Reader reader = getContentToIndex( file );
                 document.add( new Field( SearchItem.FIELD_CONTENTS, reader ) );
-
-                DateFormat formater = DateFormat.getDateInstance( DateFormat.SHORT );
-                String strDate = formater.format( file.lastModified(  ).getTime(  ) );
+                
+                String strDate = DateTools.dateToString( file.lastModified(  ).getTime(  ), DateTools.Resolution.DAY );
 
                 document.add( new Field( SearchItem.FIELD_DATE, strDate, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
             }
@@ -130,7 +131,7 @@ public class IndexerNodeAction implements INodeAction<Document, Collection<Docum
             document.add( new Field( SearchItem.FIELD_SUMMARY, file.getName(  ), Field.Store.YES,
                     Field.Index.NOT_ANALYZED ) );
             document.add( new Field( SearchItem.FIELD_TITLE, file.getName(  ), Field.Store.YES, Field.Index.NOT_ANALYZED ) );
-            document.add( new Field( SearchItem.FIELD_TYPE, _strPluginName, Field.Store.YES, Field.Index.ANALYZED ) );
+            document.add( new Field( SearchItem.FIELD_TYPE, _strPluginName, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
             document.add( new Field( SearchItem.FIELD_UID,
                     ( file.getResourceId(  ) == null )
                     ? ( String.valueOf( file.hashCode(  ) ) + "_" + JcrIndexer.SHORT_NAME )
@@ -142,6 +143,9 @@ public class IndexerNodeAction implements INodeAction<Document, Collection<Docum
             url.addParameter( PARAMETER_WORKSPACE_ID, _adminWorkspace.getId(  ) );
             document.add( new Field( SearchItem.FIELD_URL, url.getUrl(  ), Field.Store.YES, Field.Index.NOT_ANALYZED ) );
 
+            document.add( new Field( JcrSearchItem.FIELD_MIME_TYPE, file.getMimeType(  ),
+            		Field.Store.YES, Field.Index.NOT_ANALYZED ) );
+            
             return document;
         }
         catch ( IOException e )

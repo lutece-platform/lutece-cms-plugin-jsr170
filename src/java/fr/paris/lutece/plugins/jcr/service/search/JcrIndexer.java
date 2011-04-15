@@ -74,10 +74,10 @@ import java.util.TreeSet;
  */
 public class JcrIndexer implements SearchIndexer
 {
-    public static final String PLUGIN_NAME = "jsr170";
     public static final String SHORT_NAME = "jcr";
     private static final String INDEXER_DESCRIPTION = "Indexer service for JCR";
     private static final String INDEXER_VERSION = "1.0.0";
+    private static final String JSP_PAGE_SEARCH = "jsp/site/Portal.jsp?page=jsr170";
 
     /**
      * @return the description of this indexer
@@ -99,7 +99,7 @@ public class JcrIndexer implements SearchIndexer
      */
     public void indexDocuments(  ) throws IOException, InterruptedException, SiteMessageException
     {
-        Plugin plugin = PluginService.getPlugin( PLUGIN_NAME );
+        Plugin plugin = PluginService.getPlugin( JcrPlugin.PLUGIN_NAME );
 
         // definition of the comparator used in the collected files
         // thus there can't be two Documents with the same UID Field 
@@ -151,7 +151,7 @@ public class JcrIndexer implements SearchIndexer
                 {
                     RepositoryFileHome.getInstance(  )
                                       .doRecursive( adminWorkspace, view, view.getPath(  ),
-                        new IndexerNodeAction( documentComparator, PLUGIN_NAME, adminWorkspace, strRole ),
+                        new IndexerNodeAction( documentComparator, JcrPlugin.PLUGIN_NAME, adminWorkspace, strRole ),
                         new JsrUser( adminWorkspace.getUser(  ) ) );
                 }
                 catch ( BeansException e )
@@ -174,7 +174,7 @@ public class JcrIndexer implements SearchIndexer
     public List<Document> getDocuments( String strIdDocument )
     {
         List<Document> documents = new ArrayList<Document>(  );
-        Plugin plugin = PluginService.getPlugin( PLUGIN_NAME );
+        Plugin plugin = PluginService.getPlugin( JcrPlugin.PLUGIN_NAME );
         int nIdWorkspaceName = Integer.parseInt( strIdDocument.substring( 0, strIdDocument.indexOf( "-" ) ) );
         AdminWorkspace adminWorkspace = AdminJcrHome.getInstance(  ).findWorkspaceById( nIdWorkspaceName, plugin );
 
@@ -246,4 +246,22 @@ public class JcrIndexer implements SearchIndexer
             return false;
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+	public List<String> getListType(  )
+	{
+		List<String> listType = new ArrayList<String>(  );
+		listType.add( JcrPlugin.PLUGIN_NAME );
+		return listType;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getSpecificSearchAppUrl(  )
+	{
+		return JSP_PAGE_SEARCH;
+	}
 }

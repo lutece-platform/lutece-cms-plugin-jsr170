@@ -14,6 +14,11 @@
     -->
     <bean lazy-init="true" id="jsr170.jcrLockDAO" class="fr.paris.lutece.plugins.jcr.business.lock.JcrLockDAO" />
     
+    <!--
+    Search bean 
+     -->
+     <bean lazy-init="true" id="jsr170.jcrSearchEngine" class="fr.paris.lutece.plugins.jcr.service.jcrsearch.JcrLuceneSearchEngine" />
+    
     <!-- 
 	Common JCR configuration
     -->
