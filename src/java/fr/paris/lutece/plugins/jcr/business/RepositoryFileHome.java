@@ -90,7 +90,7 @@ public class RepositoryFileHome
      * @param strJcrType the type of JCR. Available types are defined in the Spring context
      * @return an instance of IRepositoryFileDAO
      */
-    private IRepositoryFileDAO getIRepositoryFileDAO( String strJcrType )
+    protected IRepositoryFileDAO getIRepositoryFileDAO( String strJcrType )
     {
         return getDAOFromSpringContext( strJcrType, SPRING_REPOSITORY_FILEdao, _cachedIRepositoryFileDAO );
     }
@@ -683,7 +683,7 @@ public class RepositoryFileHome
      * @param action the action to perform on each node
      * @return a new list of type <L>
      */
-    private void doRecursive( AdminWorkspace adminWorkspace, IRepositoryFile parentFile,
+    protected void doRecursive( AdminWorkspace adminWorkspace, IRepositoryFile parentFile,
         INodeAction<Document, Collection<Document>> action )
     {
         Document result = action.doAction( parentFile );

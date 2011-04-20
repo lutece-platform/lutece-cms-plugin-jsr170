@@ -33,25 +33,11 @@
  */
 package fr.paris.lutece.plugins.jcr.business;
 
-import fr.paris.lutece.plugins.jcr.business.admin.AdminJcrHome;
-import fr.paris.lutece.plugins.jcr.business.admin.AdminWorkspace;
-import fr.paris.lutece.plugins.jcr.service.JcrPlugin;
-import fr.paris.lutece.plugins.jcr.service.search.JcrIndexer;
-import fr.paris.lutece.plugins.jcr.util.JcrNodeLockedException;
-import fr.paris.lutece.plugins.jcr.util.JcrPathNotFoundException;
-import fr.paris.lutece.plugins.jcr.util.JcrRepositoryException;
-import fr.paris.lutece.portal.business.indexeraction.IndexerAction;
-import fr.paris.lutece.portal.service.plugin.PluginService;
-import fr.paris.lutece.portal.service.search.IndexationService;
-import fr.paris.lutece.portal.service.util.AppLogService;
-
-import org.springmodules.jcr.JcrCallback;
-
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -70,6 +56,21 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
+
+import org.springmodules.jcr.JcrCallback;
+
+import fr.paris.lutece.plugins.jcr.business.admin.AdminJcrHome;
+import fr.paris.lutece.plugins.jcr.business.admin.AdminWorkspace;
+import fr.paris.lutece.plugins.jcr.service.JcrPlugin;
+import fr.paris.lutece.plugins.jcr.service.search.JcrIndexer;
+import fr.paris.lutece.plugins.jcr.util.JcrIndexerUtils;
+import fr.paris.lutece.plugins.jcr.util.JcrNodeLockedException;
+import fr.paris.lutece.plugins.jcr.util.JcrPathNotFoundException;
+import fr.paris.lutece.plugins.jcr.util.JcrRepositoryException;
+import fr.paris.lutece.portal.business.indexeraction.IndexerAction;
+import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.portal.service.search.IndexationService;
+import fr.paris.lutece.portal.service.util.AppLogService;
 
 
 /**
@@ -164,9 +165,11 @@ public abstract class AbstractRepositoryContentDAO extends AbstractRepositoryDAO
 
                     setContent( addedNode, new FileInputStream( file ), strFilePath, strMimeType );
                     session.save(  );
-                    IndexationService.addIndexerAction( workspace.getId(  ) + "-" + addedNode.getUUID(  ),
+                    String strIdResource = workspace.getId(  ) + "-" + addedNode.getUUID(  );
+                    IndexationService.addIndexerAction( strIdResource,
                         JcrIndexer.class.getSimpleName(  ), IndexerAction.TASK_CREATE );
-
+                    JcrIndexerUtils.addIndexerAction( strIdResource, IndexerAction.TASK_CREATE );
+                    
                     return null;
                 }
             } );
@@ -197,9 +200,11 @@ public abstract class AbstractRepositoryContentDAO extends AbstractRepositoryDAO
                         throw new JcrNodeLockedException( currentNode );
                     }
 
-                    IndexationService.addIndexerAction( workspace.getId(  ) + "-" + currentNode.getUUID(  ) + "_" +
+                    String strIdResource = workspace.getId(  ) + "-" + currentNode.getUUID(  );
+                    IndexationService.addIndexerAction( strIdResource + "_" +
                         JcrIndexer.SHORT_NAME, JcrIndexer.class.getSimpleName(  ), IndexerAction.TASK_DELETE );
-
+                    JcrIndexerUtils.addIndexerAction( strIdResource, IndexerAction.TASK_DELETE );
+                    
                     currentNode.remove(  );
                     session.save(  );
 
@@ -584,9 +589,11 @@ public abstract class AbstractRepositoryContentDAO extends AbstractRepositoryDAO
                         AppLogService.debug( "New version is : " + v.getName(  ) );
                     }
 
-                    IndexationService.addIndexerAction( workspace.getId(  ) + "-" + currentNode.getUUID(  ),
+                    String strIdResource = workspace.getId(  ) + "-" + currentNode.getUUID(  );
+                    IndexationService.addIndexerAction( strIdResource,
                         JcrIndexer.class.getSimpleName(  ), IndexerAction.TASK_MODIFY );
-
+                    JcrIndexerUtils.addIndexerAction( strIdResource, IndexerAction.TASK_MODIFY );
+                    
                     session.save(  );
 
                     return null;
