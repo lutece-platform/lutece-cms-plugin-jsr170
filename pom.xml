@@ -9,7 +9,7 @@
   <artifactId>plugin-jsr170</artifactId>
   <packaging>lutece-plugin</packaging>
   <name>Lutece jsr170 plugin</name>
-  <version>2.1.2-SNAPSHOT</version>
+  <version>2.1.2</version>
   <build>
     <resources>
       <resource>
@@ -116,8 +116,8 @@
     <jiraComponentId>10056</jiraComponentId>
   </properties>
     <scm>
-        <connection>scm:svn:http://dev.lutece.paris.fr/svn/lutece/portal/trunk/plugins/cms/plugin-jsr170</connection>
-        <developerConnection>scm:svn:https://dev.lutece.paris.fr/svn/lutece/portal/trunk/plugins/cms/plugin-jsr170</developerConnection>
-        <url>http://dev.lutece.paris.fr/viewvc/lutece/portal/trunk/plugins/cms/plugin-jsr170</url>
+        <connection>scm:svn:http://dev.lutece.paris.fr/svn/lutece/portal/tags/plugin-jsr170-2.1.2</connection>
+        <developerConnection>scm:svn:https://dev.lutece.paris.fr/svn/lutece/portal/tags/plugin-jsr170-2.1.2</developerConnection>
+        <url>http://dev.lutece.paris.fr/viewvc/lutece/portal/tags/plugin-jsr170-2.1.2</url>
     </scm>
 </project>
