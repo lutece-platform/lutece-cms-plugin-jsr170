@@ -112,8 +112,8 @@
   
   <properties>
     <componentName>jsr170</componentName>
-		<jiraProjectName>LUTECE</jiraProjectName>
-    <jiraComponentId>10056</jiraComponentId>
+		<jiraProjectName>JCR</jiraProjectName>
+    <jiraComponentId>10150</jiraComponentId>
   </properties>
     <scm>
         <connection>scm:svn:http://dev.lutece.paris.fr/svn/lutece/portal/trunk/plugins/cms/plugin-jsr170</connection>
