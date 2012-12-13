@@ -37,7 +37,7 @@
     <pluginRepository>
       <id>lutece</id>
       <name>luteceRepository</name>
-      <url>http://${serverUrl}/maven_repository</url>
+      <url>http://dev.lutece.paris.fr/maven_repository</url>
     </pluginRepository>
   </pluginRepositories>
   <dependencies>
