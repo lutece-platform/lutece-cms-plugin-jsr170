@@ -1,7 +1,12 @@
-
-<div class="content-box" >
-    <h2>#i18n{jsr170.workspaces.tableLabel}</h2>
-    <table summary="#i18n{jsr170.workspaces.tableSummary}">
+<div class="row-fluid" >
+	<div class="span12" >
+	<fieldset>
+		<legend>#i18n{jsr170.workspaces.tableLabel}
+			<form class="form-inline pull-right" action="jsp/admin/plugins/jsr170/AddWorkspace.jsp">
+				<button class="btn btn-primary btn-small" type="submit" ><i class="icon-plus icon-white"></i>&nbsp;#i18n{jsr170.workspaces.buttonAddWorkspace}</button>
+		</form>
+		</legend>
+		<table summary="#i18n{jsr170.workspaces.tableSummary}" class="table table-striped table-condensed">
         <tr>
             <th>#i18n{jsr170.workspaces.label}</th>
             <th>#i18n{jsr170.workspaces.columnTitleName}</th>
@@ -9,40 +14,30 @@
             <th>#i18n{jsr170.create_workspace.workgroup}</th>
             <th>#i18n{jsr170.workspaces.columnTitleAction}</th>
         </tr>
-        
         <#list workspaces_list as workspace >
-        
         <tr>
-            <td>
-                <a href="jsp/admin/plugins/jsr170/ModifyWorkspace.jsp?workspace_id=${workspace.id}" class="admin-menu">
-                    ${workspace.label}
-                </a>
-            </td>
-            <td>
-                    ${workspace.name}
-            </td>
-            <td>
-                ${workspace.user}
-            </td>
+            <td>${workspace.label}</td>
+            <td>${workspace.name}</td>
+            <td>${workspace.user}</td>
             <td>
             	<#if workgroup_list[workspace.workgroup]?has_content>
-            	${workgroup_list[workspace.workgroup]}
+					${workgroup_list[workspace.workgroup]}
             	</#if>
             </td>
-            
             <td>
 				<#if jcr_list[workspace.jcrType]?has_content>
-                <a href="jsp/admin/plugins/jsr170/DeleteWorkspace.jsp?workspace_id=${workspace.id}" class="admin-menu">
-                <img src="images/admin/skin/actions/delete.png" width="24" height="24" alt="#i18n{jsr170.workspaces.labelDelete}" title="#i18n{jsr170.workspaces.labelDelete}"></a>
+					<a class="btn btn-primary btn-small" href="jsp/admin/plugins/jsr170/ModifyWorkspace.jsp?workspace_id=${workspace.id}"  title="${workspace.name}" >
+						<i class="icon-edit icon-white"></i>
+					</a>
+					<a class="btn btn-danger btn-small" href="jsp/admin/plugins/jsr170/DeleteWorkspace.jsp?workspace_id=${workspace.id}"  title="#i18n{jsr170.workspaces.labelDelete}" >
+						<i class="icon-trash icon-white"></i>
+					</a>
                 </#if>
             </td>
         </tr>	
         </#list>
-            
-        </table>
+    </table>
     
-    <form action="jsp/admin/plugins/jsr170/AddWorkspace.jsp">
-        <input type="submit" value="#i18n{jsr170.workspaces.buttonAddWorkspace}" class="button" />
-    </form>
-    
+    </fieldset>
+  </div>
 </div>

@@ -1,32 +1,33 @@
 	<#if file.resourceId?has_content>
-	<#assign file_resourceId=file.resourceId/>
+		<#assign file_resourceId=file.resourceId/>
 	<#else>
-	<#assign file_resourceId="-1"/>	
+		<#assign file_resourceId="-1"/>	
 	</#if>
 	<#if file.parentId?has_content>
-	<#assign file_parentId=file.parentId/>
+		<#assign file_parentId=file.parentId/>
 	<#else>
-	<#assign file_parentId="-1"/>	
+		<#assign file_parentId="-1"/>	
 	</#if>
 	     <input type="hidden" name="file_id" value="${file_resourceId}" />
 	     <#if file_resourceId != "-1" && go_up >
-	     	<p>
-	     		<a href="javascript:goUp();"><img src="images/admin/skin/up.png" alt="#i18n{document.browse_spaces.go_up_link}" hspace="5" /> #i18n{jsr170.browse_workspace.go_up_link}</a>
-	     	</p>
+			<a href="javascript:goUp();" class="btn btn-link">
+				<i class="icon-chevron-up" title="#i18n{document.browse_spaces.go_up_link}"></i>&nbsp;#i18n{jsr170.browse_workspace.go_up_link}
+			</a>
 	     </#if>
-	     <p>
 	     <#list file_list as file_item >
 	     	<#if file_item.isDirectory()>
-				<input type="radio" class="radio" name="browser_selected_file" value="${file_item.resourceId}"/>
-	            <img src="images/admin/skin/plugins/jsr170/space.png" alt="${file_item.name}" hspace="5" />
-	            <a href="javascript:openSpace('${file_item.resourceId}');">${file_item.name}</a>
-	          	<br />
+				<label class="radio">
+					<input type="radio" class="radio" name="browser_selected_file" value="${file_item.resourceId}"/>
+				    <img src="images/admin/skin/plugins/jsr170/space.png" alt="${file_item.name}" hspace="5" />
+					<a href="javascript:openSpace('${file_item.resourceId}');">${file_item.name}</a>
+	          	</label>
           	</#if>
-	     </#list>
-         </p>
-	     <p>
-		     <input type="submit" value="#i18n{jsr170.browse_workspace.validate}" class="button" />
-	     </p>
+	    </#list>
+        <div class="form-actions">
+			<button class="btn btn-primary btn-small" type="submit" >
+				<i class="icon-ok icon-white"></i>&nbsp;#i18n{jsr170.browse_workspace.validate}</button>
+		</div>
+	     
 
 <script language="javascript">
 formId = 0;

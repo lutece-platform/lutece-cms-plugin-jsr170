@@ -1,36 +1,31 @@
+<div class="row-fluid" >
+	<div class="span12" >
+		<fieldset>
+		<legend>#i18n{jsr170.locks.tableLabel}</legend>
+			<table summary="#i18n{jsr170.locks.tableSummary}"  class="table table-striped table-condensed">
+			<tr>
+				<th>#i18n{jsr170.locks.columnPath}</th>
+				<th>#i18n{jsr170.locks.columnLockedBy}</th>
+				<th>#i18n{jsr170.locks.columnCreationDate}</th>
+				<th>#i18n{jsr170.locks.columnTitleAction}</th>
+			</tr>
+			
+			<#list lock_list?keys as key >
+			<#assign lock = lock_list[key] >        
+			<tr>
+				<td>${key}</td>
+				<td>${lock.idUser}</td>
+				<td>${lock.creationDate}</td>
+				<td>
+					<a class="btn btn-danger btn-small" href="jsp/admin/plugins/jsr170/DeleteLock.jsp?view_id=${view.id}&workspace_id=${view.workspaceId}&lock_id=${lock.idLock}&file_id=${lock.idFile}"  title="#i18n{jsr170.locks.labelDelete}" >
+						<i class="icon-trash icon-white"></i>
+					</a>
 
-<div class="content-box" >
-    <h2>#i18n{jsr170.locks.tableLabel}</h2>
-    <table summary="#i18n{jsr170.locks.tableSummary}">
-        <tr>
-            <th>#i18n{jsr170.locks.columnPath}</th>
-            <th>#i18n{jsr170.locks.columnLockedBy}</th>
-            <th>#i18n{jsr170.locks.columnCreationDate}</th>
-            <th>#i18n{jsr170.locks.columnTitleAction}</th>
-        </tr>
-        
-        <#list lock_list?keys as key >
-		<#assign lock = lock_list[key] >        
-        <tr>
-            <td>
-                    ${key}
-            </td>
-            <td>
-                ${lock.idUser}
-            </td>
-            <td>
-                ${lock.creationDate}
-            </td>
-            <td>
-                <a href="jsp/admin/plugins/jsr170/DeleteLock.jsp?view_id=${view.id}&workspace_id=${view.workspaceId}&lock_id=${lock.idLock}&file_id=${lock.idFile}" class="admin-menu">
-                <img src="images/admin/skin/actions/delete.png" width="24" height="24" alt="#i18n{jsr170.locks.labelDelete}" title="#i18n{jsr170.locks.labelDelete}">
-                </a>
-            </td>
-            
-        </tr>	
-        </#list>
-            
-        </table>
-    
-   
+				</td>
+				
+			</tr>	
+			</#list>
+			</table>
+		</fieldset>
+	</div>
 </div>

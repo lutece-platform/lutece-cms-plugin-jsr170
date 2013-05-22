@@ -1,54 +1,57 @@
-
-<div class="content-box" >
-    
-    <h2>#i18n{jsr170.views.tableLabel}</h2>
-    
-<form method="post" name="modify_view_roles" id="modify_view_roles" action="jsp/admin/plugins/jsr170/DoModifyViewRoles.jsp">
-        <input type="hidden" value="${view.id}" name="view_id" />
-        <p>
-            #i18n{jsr170.manage_workspace.description} <b>${view.name}</b>
-        </p>
-        <p>
-         <label for="read_roles">#i18n{jsr170.manage_workspace.readRole} :</label>
-         <select name="read_roles" id="read_roles" multiple>
-         <#list workspace_read_roles as role >
-         	<#if role.checked>
-	         <option selected="selected" value="${role.code}">${role.name}</option>
-	        <#else>
-	         <option value="${role.code}">${role.name}</option>
-	        </#if>
-         </#list>
-         </select>
-        </p>
-        <p>
-         <label for="write_roles">#i18n{jsr170.manage_workspace.writeRole} :</label>
-         <select name="write_roles" id="write_roles" multiple>
-         <#list workspace_write_roles as role >
-         	<#if role.checked>
-	         <option selected="selected" value="${role.code}">${role.name}</option>
-	        <#else>
-	         <option value="${role.code}">${role.name}</option>
-	        </#if>
-         </#list>
-         </select>
-        </p>
-        <p>
-         <label for="remove_roles">#i18n{jsr170.manage_workspace.removeRole} :</label>
-         <select name="remove_roles" id="remove_roles" multiple>
-         <#list workspace_remove_roles as role >
-         	<#if role.checked>
-	         <option selected="selected" value="${role.code}">${role.name}</option>
-	        <#else>
-	         <option value="${role.code}">${role.name}</option>
-	        </#if>
-         </#list>
-         </select>
-        </p>
-        
-        <p>   
-            <input type="submit" value="#i18n{jsr170.create_workspace.buttonValidate}" class="button" tabindex="3" />
-        </p>
-        
-    </form>
-    
+<div class="row-fluid" >
+	<div class="span12">
+    	<fieldset>
+		<legend>#i18n{jsr170.manage_workspace.description} <strong>${view.name}</strong></legend>
+		<form class="form-horizontal" method="post" name="modify_view_roles" id="modify_view_roles" action="jsp/admin/plugins/jsr170/DoModifyViewRoles.jsp">
+		<input type="hidden" value="${view.id}" name="view_id" />
+        <div class="control-group">
+		<label class="control-label" for="read_roles">#i18n{jsr170.manage_workspace.readRole}</label>
+			<div class="controls">
+			<select name="read_roles" id="read_roles" multiple>
+			<#list workspace_read_roles as role >
+				<#if role.checked>
+					<option selected="selected" value="${role.code}">${role.name}</option>
+				<#else>
+					<option value="${role.code}">${role.name}</option>
+				</#if>
+			</#list>
+			</select>
+			</div>
+		</div>
+        <div class="control-group">
+			<label class="control-label" for="write_roles">#i18n{jsr170.manage_workspace.writeRole}</label>
+			<div class="controls">
+				<select name="write_roles" id="write_roles" multiple>
+				<#list workspace_write_roles as role >
+				<#if role.checked>
+					<option selected="selected" value="${role.code}">${role.name}</option>
+				<#else>
+					<option value="${role.code}">${role.name}</option>
+				</#if>
+			</#list>
+			</select>
+			</div>
+		</div>
+        <div class="control-group">
+		<label class="control-label" for="remove_roles">#i18n{jsr170.manage_workspace.removeRole}</label>
+		<div class="controls">	
+			<select name="remove_roles" id="remove_roles" multiple>
+			<#list workspace_remove_roles as role >
+				<#if role.checked>
+					<option selected="selected" value="${role.code}">${role.name}</option>
+				<#else>
+					<option value="${role.code}">${role.name}</option>
+				</#if>
+			</#list>
+			</select>
+			</div>
+		</div>
+        <div class="form-actions">
+            <button class="btn btn-primary btn-small" type="submit" >
+				<i class="icon-ok icon-white"></i>&nbsp;#i18n{jsr170.create_workspace.buttonValidate}
+			</button>
+		</div>
+        </form>
+		</fieldset>
+	</div>
 </div>
