@@ -1,53 +1,27 @@
-<div class="span-15 prepend-1 append-1 append-bottom">
-    <div class="portlet -lutece-border-radius">
-        <div class="portlet-header">#i18n{jsr170.search.title}</div>
-        <#if result_list?has_content> 
-	        <#list result_list as result>
-	        <div>
-	            <a href="${result.url?xhtml}">${result.title}</a> |
-	            <em>#i18n{jsr170.search.labelTypeOfDocument} : ${result.type}</em> |
-	            <#if result.date?has_content>
-	                    ${result.date?date?string.short}
-	            </#if>
-	        </div>
-	        <div>&nbsp;</div>
-	        </#list>
-        <#else>
-            <blockquote>#i18n{jsr170.search.search_nok}</blockquote>
-        </#if>
-    </div>
-</div>
-
-<div class="span-6 append-1 append-bottom last">
-    <div class="portlet -lutece-border-radius">
-        <form class="default-form" name="form_search" method="post">
-            <div class="hide">
-                <input type="hidden" name="page" value="search" />
-            </div>
-            <div>
-                <input type="text" name="query" size="20" value="${query!}" />
-                <input type="image"
-                       src="images/local/skin/buttons/b_search.png"
-                       title="#i18n{jsr170.search.buttonSearch}"
-                       alt="#i18n{jsr170.search.buttonSearch}" />
-            </div>
-            <div>
-                <input type="checkbox" name="title_only" ${title_only!} />&nbsp;#i18n{jsr170.search.titleOnlyLabel}
-            </div>
-            <div>
-                <#-- default_operator and/or -->
-                #i18n{jsr170.search.operator} :
-                <select name="operator">
+<div class="row-fluid">
+	<div class="span4">
+		<form name="form_search" method="post">
+            <input type="hidden" name="page" value="search" />
+			<span class="input-append">
+				<input type="text" class="input-normal" name="query" size="20" value="${query!}" placeholder="#i18n{jsr170.search.buttonSearch}" >
+				<button class="btn" type="submit" title="#i18n{jsr170.search.buttonSearch}">
+					<i class="icon-search"></i>
+				</button>
+			</span>
+			<label class="checkbox">
+				<input type="checkbox" name="title_only" ${title_only!}>&nbsp;#i18n{jsr170.search.titleOnlyLabel}
+			</label>	
+            <#-- default_operator and/or -->
+            <label>#i18n{jsr170.search.operator}</label>
+                <select name="operator" class="input-normal">
                     <#list ["OR","AND"] as i_operator>
                     <option value="${i_operator}" <#if i_operator == (operator!"OR")> selected="true"</#if> >
                         #i18n{jsr170.search.operator.${i_operator}}
                     </option>
                     </#list>
                 </select>
-            </div><br />
-            <div>
                 <#-- type_filter -->
-                #i18n{jsr170.search.typeFilter} :<br />
+                <label>#i18n{jsr170.search.typeFilter}</label>
                 <select name="mime_type">
                     <option value="none" <#if !mime_type?exists || (mime_type!"none") == "none">selected="true"</#if>>
                         #i18n{jsr170.search.typeFilter.none}
@@ -56,16 +30,34 @@
                         <option value="${i_mime_type}" <#if (mime_type!"none") == i_mime_type>selected="true"</#if>>${i_mime_type}</option>
                     </#list>
                 </select>
-            </div><br />
-            <div>
-                <#-- date_filter -->
-                #i18n{jsr170.search.dateFilter} :<br />
-                #i18n{jsr170.search.dateFilterAfter}&nbsp;:&nbsp;
-                <input type=text id="date_begin" name="date_begin" size="10" value="${date_begin!}" /><br />
-                #i18n{jsr170.search.dateFilterBefore}&nbsp;:&nbsp;
-                <input type=text id="date_end" name="date_end" size="10" value="${date_end!}" />
-                <@getDatePickerRange idFieldFrom="date_begin" idFieldTo="date_end" language="${locale.language}" />
-            </div><br />
+				<p class="help-block"><#-- date_filter -->#i18n{jsr170.search.dateFilter}</p>
+                <label>#i18n{jsr170.search.dateFilterAfter}</label>
+                <input type=text id="date_begin" name="date_begin" class="input-normal" value="${date_begin!}">
+                <label>#i18n{jsr170.search.dateFilterBefore}</label>
+                <input type=text id="date_end" name="date_end" class="input-normal"  value="${date_end!}">
+               
+            
         </form>
     </div>
+		<div class="span7">
+		<div class="portlet">
+			<div class="portlet-header">#i18n{jsr170.search.title}</div>
+			<#if result_list?has_content> 
+				<ul>
+				<#list result_list as result>
+				<a href="${result.url?xhtml}">${result.title}</a> |
+					<em>#i18n{jsr170.search.labelTypeOfDocument} : ${result.type}</em> |
+					<#if result.date?has_content>
+	                    ${result.date?date?string.short}
+					</#if>
+					</ul>
+				</#list>
+			<#else>
+				<div class="alert alert-error">#i18n{jsr170.search.search_nok}</div>
+			</#if>
+		</div>
+	</div>
 </div>
+<script src="js/jquery/plugins/ui/jquery-ui-1.8.16.custom.min.js"></script>
+<script src="js/jquery/plugins/ui/ui.datepicker-fr.js"></script>
+<@getDatePickerRange idFieldFrom="date_begin" idFieldTo="date_end" language="${locale.language}" />
