@@ -33,35 +33,6 @@
  */
 package fr.paris.lutece.plugins.jcr.service.jcrsearch;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.document.DateTools;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.misc.ChainedFilter;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.queryParser.QueryParser.Operator;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.CachingWrapperFilter;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.QueryWrapperFilter;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Searcher;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TermRangeQuery;
-import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.spell.LuceneDictionary;
-
 import fr.paris.lutece.plugins.jcr.service.JcrPlugin;
 import fr.paris.lutece.portal.business.page.Page;
 import fr.paris.lutece.portal.service.search.IndexationService;
@@ -72,153 +43,179 @@ import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.document.DateTools;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.queries.ChainedFilter;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser.Operator;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.CachingWrapperFilter;
+import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.QueryWrapperFilter;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TermRangeQuery;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.spell.LuceneDictionary;
+import org.apache.lucene.util.BytesRef;
+
+
 /**
  * JcrLuceneSearchEngine
  */
 public class JcrLuceneSearchEngine implements JcrSearchEngine
 {
-	/**
-	 * {@inheritDoc}
-	 */
-	public List<SearchResult> getSearchResult( String strQuery, boolean bTitle,
-			String strOperator, Date dateBegin, Date dateEnd, String strMIMEType,
-			LuteceUser user )
-	{
-		ArrayList<JcrSearchItem> listResults = new ArrayList<JcrSearchItem>(  );
-        
-		
-		try
-		{
-			Searcher searcher = new IndexSearcher( IndexationService.getDirectoryIndex(  ), true );
-			
-			BooleanQuery query = new BooleanQuery(  );
-			Query queryPart;
-			
+    /**
+     * {@inheritDoc}
+     */
+    public List<SearchResult> getSearchResult( String strQuery, boolean bTitle, String strOperator, Date dateBegin,
+            Date dateEnd, String strMIMEType, LuteceUser user )
+    {
+        ArrayList<JcrSearchItem> listResults = new ArrayList<JcrSearchItem>( );
+
+        try
+        {
+            IndexReader ir = DirectoryReader.open( IndexationService.getDirectoryIndex( ) );
+            IndexSearcher searcher = new IndexSearcher( ir );
+
+            BooleanQuery query = new BooleanQuery( );
+            Query queryPart;
+
             //Type (=jsr170)
-			queryPart = new TermQuery( new Term( JcrSearchItem.FIELD_TYPE, JcrPlugin.PLUGIN_NAME ) );
-			query.add( queryPart, BooleanClause.Occur.MUST );
-			
-			//Content
-			if( StringUtils.isNotBlank( strQuery ) )
-			{
-				//subquery
-				BooleanQuery queryContent = new BooleanQuery(  );
-				Query queryContentPart;
-				
-				if( !bTitle )
-				{
-					QueryParser parser = new QueryParser( IndexationService.LUCENE_INDEX_VERSION, 
-							JcrSearchItem.FIELD_CONTENTS, IndexationService.getAnalyser(  ) );
-					
-					if( strOperator.equalsIgnoreCase( "AND" ) )
-					{
-						parser.setDefaultOperator( Operator.AND );
-					}
-					
-					queryContentPart = parser.parse( strQuery );
-					
-					queryContent.add( queryContentPart, BooleanClause.Occur.SHOULD );
-				}
-				
-				
-				//Search on title with both parsed query and "as is" query
-				QueryParser parser = new QueryParser( IndexationService.LUCENE_INDEX_VERSION, 
-						JcrSearchItem.FIELD_TITLE, IndexationService.getAnalyser(  ) );
-				
-				if( strOperator.equalsIgnoreCase( "AND" ) )
-				{
-					parser.setDefaultOperator( Operator.AND );
-				}
-				
-				queryContentPart = parser.parse( strQuery );
-				
-				queryContent.add( queryContentPart, BooleanClause.Occur.SHOULD );
-				
-				queryContentPart = new TermQuery( new Term( JcrSearchItem.FIELD_TITLE, strQuery ) );
-				queryContent.add( queryContentPart, BooleanClause.Occur.SHOULD );
-				
-				//add the subquery to the main one
-				query.add( queryContent, BooleanClause.Occur.MUST );
-			}
-			
-			//Dates
-			String strDateBegin = null;
-			String strDateEnd = null;
-			
-			if( dateBegin != null )
-			{
-				strDateBegin = DateTools.dateToString( dateBegin, DateTools.Resolution.DAY );
-			}
-			if( dateEnd != null )
-			{
-				strDateEnd = DateTools.dateToString( dateEnd, DateTools.Resolution.DAY );
-			}
-			
-			if( strDateBegin != null || strDateEnd != null )
-			{
-				queryPart = new TermRangeQuery( JcrSearchItem.FIELD_DATE,
-						strDateBegin, strDateEnd, true, false );
-				query.add( queryPart, BooleanClause.Occur.MUST );
-			}
-			
-			//MIME type
-			if( StringUtils.isNotBlank( strMIMEType ) )
-			{
-				queryPart = new TermQuery( new Term( JcrSearchItem.FIELD_MIME_TYPE, strMIMEType ) );
-				query.add( queryPart, BooleanClause.Occur.MUST );
-			}
-            
-			Filter filterRole = getFilterRoles( user );
-			
-			TopDocs topDocs = searcher.search( query, filterRole, LuceneSearchEngine.MAX_RESPONSES );
+            queryPart = new TermQuery( new Term( JcrSearchItem.FIELD_TYPE, JcrPlugin.PLUGIN_NAME ) );
+            query.add( queryPart, BooleanClause.Occur.MUST );
+
+            //Content
+            if ( StringUtils.isNotBlank( strQuery ) )
+            {
+                //subquery
+                BooleanQuery queryContent = new BooleanQuery( );
+                Query queryContentPart;
+
+                if ( !bTitle )
+                {
+                    QueryParser parser = new QueryParser( IndexationService.LUCENE_INDEX_VERSION,
+                            JcrSearchItem.FIELD_CONTENTS, IndexationService.getAnalyser( ) );
+
+                    if ( strOperator.equalsIgnoreCase( "AND" ) )
+                    {
+                        parser.setDefaultOperator( Operator.AND );
+                    }
+
+                    queryContentPart = parser.parse( strQuery );
+
+                    queryContent.add( queryContentPart, BooleanClause.Occur.SHOULD );
+                }
+
+                //Search on title with both parsed query and "as is" query
+                QueryParser parser = new QueryParser( IndexationService.LUCENE_INDEX_VERSION,
+                        JcrSearchItem.FIELD_TITLE, IndexationService.getAnalyser( ) );
+
+                if ( strOperator.equalsIgnoreCase( "AND" ) )
+                {
+                    parser.setDefaultOperator( Operator.AND );
+                }
+
+                queryContentPart = parser.parse( strQuery );
+
+                queryContent.add( queryContentPart, BooleanClause.Occur.SHOULD );
+
+                queryContentPart = new TermQuery( new Term( JcrSearchItem.FIELD_TITLE, strQuery ) );
+                queryContent.add( queryContentPart, BooleanClause.Occur.SHOULD );
+
+                //add the subquery to the main one
+                query.add( queryContent, BooleanClause.Occur.MUST );
+            }
+
+            //Dates
+            BytesRef strDateBegin = null;
+            BytesRef strDateEnd = null;
+
+            if ( dateBegin != null )
+            {
+                strDateBegin = new BytesRef( DateTools.dateToString( dateBegin, DateTools.Resolution.DAY ) );
+            }
+            if ( dateEnd != null )
+            {
+                strDateEnd = new BytesRef( DateTools.dateToString( dateEnd, DateTools.Resolution.DAY ) );
+            }
+
+            if ( strDateBegin != null || strDateEnd != null )
+            {
+                queryPart = new TermRangeQuery( JcrSearchItem.FIELD_DATE, strDateBegin, strDateEnd, true, false );
+                query.add( queryPart, BooleanClause.Occur.MUST );
+            }
+
+            //MIME type
+            if ( StringUtils.isNotBlank( strMIMEType ) )
+            {
+                queryPart = new TermQuery( new Term( JcrSearchItem.FIELD_MIME_TYPE, strMIMEType ) );
+                query.add( queryPart, BooleanClause.Occur.MUST );
+            }
+
+            Filter filterRole = getFilterRoles( user );
+
+            TopDocs topDocs = searcher.search( query, filterRole, LuceneSearchEngine.MAX_RESPONSES );
 
             ScoreDoc[] hits = topDocs.scoreDocs;
 
             for ( int i = 0; i < hits.length; i++ )
             {
-            	int docId = hits[i].doc;
+                int docId = hits[i].doc;
                 Document document = searcher.doc( docId );
                 JcrSearchItem si = new JcrSearchItem( document );
                 listResults.add( si );
             }
-			
-			searcher.close(  );
-		}
-		catch ( Exception e )
-        {
-            AppLogService.error( e.getMessage(  ), e );
         }
-		
-		return convertList( listResults );
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	public List<String> getMIMETypeList(  )
-	{
-		List<String> listMIMEType = new ArrayList<String>(  );
-		
-		try
-		{
-			IndexReader ir = IndexReader.open( IndexationService.getDirectoryIndex(  ), true );
-			
-			LuceneDictionary dico = new LuceneDictionary( ir, JcrSearchItem.FIELD_MIME_TYPE );
-			
-			for( Iterator it = dico.getWordsIterator(  ); it.hasNext(  ); )
-			{
-				listMIMEType.add( (String) it.next( ) );
-			}
-		}
-		catch( Exception e )
-		{
-			AppLogService.error( e.getMessage(  ), e );
-		}
-		
-		return listMIMEType;
-	}
-	
-	/**
+        catch ( Exception e )
+        {
+            AppLogService.error( e.getMessage( ), e );
+        }
+
+        return convertList( listResults );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<String> getMIMETypeList( )
+    {
+        List<String> listMIMEType = new ArrayList<String>( );
+
+        try
+        {
+            IndexReader ir = DirectoryReader.open( IndexationService.getDirectoryIndex( ) );
+
+            LuceneDictionary dico = new LuceneDictionary( ir, JcrSearchItem.FIELD_MIME_TYPE );
+
+            BytesRef byteRef = null;
+
+            while ( ( byteRef = dico.getWordsIterator( ).next( ) ) != null )
+            {
+                listMIMEType.add( new String( byteRef.bytes, byteRef.offset, byteRef.length ) );
+            }
+        }
+        catch ( Exception e )
+        {
+            AppLogService.error( e.getMessage( ), e );
+        }
+
+        return listMIMEType;
+    }
+
+    /**
      * Generate the Lutece role filter if necessary
      * @param user the registered lutece user from who the query occured
      * @return The Filter by Lutece Role
@@ -229,9 +226,9 @@ public class JcrLuceneSearchEngine implements JcrSearchEngine
         Filter[] filtersRole = null;
         boolean bFilterResult = false;
 
-        if ( user != null && SecurityService.isAuthenticationEnable(  ) )
+        if ( user != null && SecurityService.isAuthenticationEnable( ) )
         {
-            String[] userRoles = SecurityService.getInstance(  ).getRolesByUser( user );
+            String[] userRoles = SecurityService.getInstance( ).getRolesByUser( user );
 
             if ( userRoles != null )
             {
@@ -244,9 +241,9 @@ public class JcrLuceneSearchEngine implements JcrSearchEngine
                 }
             }
         }
-        else if ( SecurityService.isAuthenticationEnable(  ) )
+        else if ( SecurityService.isAuthenticationEnable( ) )
         {
-        	bFilterResult = true;
+            bFilterResult = true;
             filtersRole = new Filter[1];
         }
 
@@ -259,39 +256,38 @@ public class JcrLuceneSearchEngine implements JcrSearchEngine
 
         return filterRole;
     }
-	
-	/**
+
+    /**
      * Convert the SearchItem list on SearchResult list
      * @param listSource The source list
      * @return The result list
      */
     private List<SearchResult> convertList( List<JcrSearchItem> listSource )
     {
-        List<SearchResult> listDest = new ArrayList<SearchResult>(  );
+        List<SearchResult> listDest = new ArrayList<SearchResult>( );
 
         for ( JcrSearchItem item : listSource )
         {
-            SearchResult result = new SearchResult(  );
-            result.setId( item.getId(  ) );
+            SearchResult result = new SearchResult( );
+            result.setId( item.getId( ) );
 
             try
             {
-                result.setDate( DateTools.stringToDate( item.getDate(  ) ) );
+                result.setDate( DateTools.stringToDate( item.getDate( ) ) );
             }
             catch ( ParseException e )
             {
-                AppLogService.error( "Bad Date Format for indexed item \"" + item.getTitle(  ) + "\" : " +
-                    e.getMessage(  ) );
+                AppLogService.error( "Bad Date Format for indexed item \"" + item.getTitle( ) + "\" : "
+                        + e.getMessage( ) );
             }
 
-            result.setUrl( item.getUrl(  ) );
-            result.setTitle( item.getTitle(  ) );
-            result.setType( item.getMIMEType(  ) );
+            result.setUrl( item.getUrl( ) );
+            result.setTitle( item.getTitle( ) );
+            result.setType( item.getMIMEType( ) );
             listDest.add( result );
         }
 
         return listDest;
     }
-    
-    
+
 }

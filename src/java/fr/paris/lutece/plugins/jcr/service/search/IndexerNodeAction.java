@@ -41,29 +41,35 @@ import fr.paris.lutece.plugins.lucene.service.indexer.IFileIndexer;
 import fr.paris.lutece.plugins.lucene.service.indexer.IFileIndexerFactory;
 import fr.paris.lutece.portal.service.search.SearchItem;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.util.url.UrlItem;
 
-import org.apache.lucene.demo.html.HTMLParser;
-import org.apache.lucene.document.DateTools;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
-
-import java.text.DateFormat;
-
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.TreeSet;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.lucene.document.DateTools;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.html.HtmlParser;
+import org.apache.tika.sax.BodyContentHandler;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+
 
 /**
  * Implementation of INodeAction for indexing the nodes of a JCR
- *
+ * 
  * It stores results using TreeSet and specific Comparator
  */
 public class IndexerNodeAction implements INodeAction<Document, Collection<Document>>
@@ -78,12 +84,13 @@ public class IndexerNodeAction implements INodeAction<Document, Collection<Docum
 
     /**
      * Default constructor
-     * @param nodeComparator the comparator used to store the results in the collection
+     * @param nodeComparator the comparator used to store the results in the
+     *            collection
      * @param strPluginName the plugin name to retrieve Spring context
      * @param adminWorkspace the adminWorkspace to work on
      */
     public IndexerNodeAction( Comparator<Document> nodeComparator, String strPluginName, AdminWorkspace adminWorkspace,
-        String strRole )
+            String strRole )
     {
         _nodeComparator = nodeComparator;
         _strPluginName = strPluginName;
@@ -95,7 +102,7 @@ public class IndexerNodeAction implements INodeAction<Document, Collection<Docum
      * @return a collection of document
      * @see fr.paris.lutece.plugins.jcr.business.INodeAction#createCollection()
      */
-    public Collection<Document> createCollection(  )
+    public Collection<Document> createCollection( )
     {
         return new TreeSet<Document>( _nodeComparator );
     }
@@ -108,44 +115,43 @@ public class IndexerNodeAction implements INodeAction<Document, Collection<Docum
      */
     public Document doAction( IRepositoryFile file )
     {
-        if ( file.isDirectory(  ) )
+        if ( file.isDirectory( ) )
         {
             return null;
         }
 
         try
         {
-            Document document = new Document(  );
+            Document document = new Document( );
 
-            if ( file.isFile(  ) )
+            FieldType ft = new FieldType( StringField.TYPE_STORED );
+            ft.setOmitNorms( false );
+
+            if ( file.isFile( ) )
             {
-                Reader reader = getContentToIndex( file );
-                document.add( new Field( SearchItem.FIELD_CONTENTS, reader ) );
-                
-                String strDate = DateTools.dateToString( file.lastModified(  ).getTime(  ), DateTools.Resolution.DAY );
+                String strContent = getContentToIndex( file );
+                document.add( new Field( SearchItem.FIELD_CONTENTS, strContent, TextField.TYPE_NOT_STORED ) );
 
-                document.add( new Field( SearchItem.FIELD_DATE, strDate, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
+                String strDate = DateTools.dateToString( file.lastModified( ).getTime( ), DateTools.Resolution.DAY );
+
+                document.add( new Field( SearchItem.FIELD_DATE, strDate, ft ) );
             }
 
-            document.add( new Field( SearchItem.FIELD_ROLE, _strRole, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
-            document.add( new Field( SearchItem.FIELD_SUMMARY, file.getName(  ), Field.Store.YES,
-                    Field.Index.NOT_ANALYZED ) );
-            document.add( new Field( SearchItem.FIELD_TITLE, file.getName(  ), Field.Store.YES, Field.Index.NOT_ANALYZED ) );
-            document.add( new Field( SearchItem.FIELD_TYPE, _strPluginName, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
-            document.add( new Field( SearchItem.FIELD_UID,
-                    ( file.getResourceId(  ) == null )
-                    ? ( String.valueOf( file.hashCode(  ) ) + "_" + JcrIndexer.SHORT_NAME )
-                    : ( _adminWorkspace.getId(  ) + "-" + file.getResourceId(  ) + "_" + JcrIndexer.SHORT_NAME ),
-                    Field.Store.YES, Field.Index.NOT_ANALYZED ) );
+            document.add( new Field( SearchItem.FIELD_ROLE, _strRole, ft ) );
+            document.add( new Field( SearchItem.FIELD_SUMMARY, file.getName( ), ft ) );
+            document.add( new Field( SearchItem.FIELD_TITLE, file.getName( ), ft ) );
+            document.add( new Field( SearchItem.FIELD_TYPE, _strPluginName, ft ) );
+            document.add( new Field( SearchItem.FIELD_UID, ( file.getResourceId( ) == null ) ? ( String.valueOf( file
+                    .hashCode( ) ) + "_" + JcrIndexer.SHORT_NAME ) : ( _adminWorkspace.getId( ) + "-"
+                    + file.getResourceId( ) + "_" + JcrIndexer.SHORT_NAME ), ft ) );
 
             UrlItem url = new UrlItem( DISPLAY_FILE_BASE_URL );
-            url.addParameter( PARAMETER_FILE_ID, file.getResourceId(  ) );
-            url.addParameter( PARAMETER_WORKSPACE_ID, _adminWorkspace.getId(  ) );
-            document.add( new Field( SearchItem.FIELD_URL, url.getUrl(  ), Field.Store.YES, Field.Index.NOT_ANALYZED ) );
+            url.addParameter( PARAMETER_FILE_ID, file.getResourceId( ) );
+            url.addParameter( PARAMETER_WORKSPACE_ID, _adminWorkspace.getId( ) );
+            document.add( new Field( SearchItem.FIELD_URL, url.getUrl( ), ft ) );
 
-            document.add( new Field( JcrSearchItem.FIELD_MIME_TYPE, file.getMimeType(  ),
-            		Field.Store.YES, Field.Index.NOT_ANALYZED ) );
-            
+            document.add( new Field( JcrSearchItem.FIELD_MIME_TYPE, file.getMimeType( ), ft ) );
+
             return document;
         }
         catch ( IOException e )
@@ -160,31 +166,54 @@ public class IndexerNodeAction implements INodeAction<Document, Collection<Docum
      * @return a Reader that can be used to retrieve indexed content
      * @throws IOException if IO error
      */
-    private Reader getContentToIndex( IRepositoryFile file )
-        throws IOException
+    private String getContentToIndex( IRepositoryFile file ) throws IOException
     {
+        // TODO
+        StringBuilder sbContentToIndex = new StringBuilder( );
         // Gets indexer depending on the ContentType (ie: "application/pdf"
         // should use a PDF indexer)
-        IFileIndexerFactory factory = (IFileIndexerFactory) SpringContextService.getBean( IFileIndexerFactory.BEAN_FILE_INDEXER_FACTORY );
-        IFileIndexer indexer = factory.getIndexer( file.getMimeType(  ) );
+        IFileIndexerFactory factory = (IFileIndexerFactory) SpringContextService
+                .getBean( IFileIndexerFactory.BEAN_FILE_INDEXER_FACTORY );
+        IFileIndexer indexer = factory.getIndexer( file.getMimeType( ) );
 
-        AppLogService.debug( "Mime type of indexed file " + file + " is " + file.getMimeType(  ) );
+        AppLogService.debug( "Mime type of indexed file " + file + " is " + file.getMimeType( ) );
 
         if ( indexer != null )
         {
-            return new LazyIndexedContentReader( indexer, file.getContent(  ) );
+            try
+            {
+                ByteArrayInputStream bais = new ByteArrayInputStream( IOUtils.toByteArray( file.getContent( ) ) );
+                sbContentToIndex.append( indexer.getContentToIndex( bais ) );
+                bais.close( );
+            }
+            catch ( IOException e )
+            {
+                AppLogService.error( e.getMessage( ), e );
+            }
         }
-        else if ( file.getMimeType(  ).startsWith( "text/" ) )
+        else if ( file.getMimeType( ).startsWith( "text/" ) )
         {
-            Reader readerPage = new InputStreamReader( file.getContent(  ) );
-
-            HTMLParser parser = new HTMLParser( readerPage );
+            ContentHandler handler = new BodyContentHandler( );
+            Metadata metadata = new Metadata( );
+            try
+            {
+                new HtmlParser( ).parse( new ByteArrayInputStream( IOUtils.toByteArray( file.getContent( ) ) ),
+                        handler, metadata, new ParseContext( ) );
+            }
+            catch ( SAXException e )
+            {
+                throw new AppException( "Error during page parsing." );
+            }
+            catch ( TikaException e )
+            {
+                throw new AppException( "Error during page parsing." );
+            }
 
             //the content of the article is recovered in the parser because this one
             //had replaced the encoded caracters (as &eacute;) by the corresponding special caracter (as ?)
-            return parser.getReader(  );
+            sbContentToIndex = sbContentToIndex.append( handler.toString( ) );
         }
 
-        return new StringReader( "" );
+        return sbContentToIndex.toString( );
     }
 }
