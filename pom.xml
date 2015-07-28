@@ -27,7 +27,7 @@
             <url>http://dev.lutece.paris.fr/maven_repository</url>
         </repository>
         <repository>
-            <snapshots />
+            <snapshots/>
             <id>luteceSnapshot</id>
             <name>luteceRepository</name>
             <url>http://dev.lutece.paris.fr/snapshot_repository</url>
